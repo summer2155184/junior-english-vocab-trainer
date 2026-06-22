@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>初中英语单词暑假学习系统 V1</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell">
+      <h1>初中英语单词暑假学习系统</h1>
+      <p>离线使用 · 中文默写英文 · 错词循环</p>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section id="homeView" class="view" aria-labelledby="todayTitle">
+      <div class="today-card">
+        <p class="eyebrow">当前任务</p>
+        <h2 id="todayTitle">Day01</h2>
+        <p id="todayStatus" class="muted">准备开始</p>
+      </div>
+
+      <fieldset id="modePicker" class="mode-picker">
+        <legend>学习强度</legend>
+        <label>
+          <input type="radio" name="mode" value="easy">
+          <span><strong>轻松模式</strong><small>10 新词 + 5 复习 + 5 错词</small></span>
+        </label>
+        <label>
+          <input type="radio" name="mode" value="standard">
+          <span><strong>标准模式</strong><small>15 新词 + 5 复习 + 5 错词</small></span>
+        </label>
+        <label>
+          <input type="radio" name="mode" value="sprint">
+          <span><strong>冲刺模式</strong><small>20 新词 + 5 复习 + 5 错词</small></span>
+        </label>
+      </fieldset>
+
+      <div class="speech-setting">
+        <button id="speechToggleButton" class="button secondary" type="button" aria-pressed="false">语音鼓励：关闭</button>
+        <small id="speechSupportText">使用浏览器内置语音，不联网。</small>
+      </div>
+
+      <section class="summary" aria-label="今日题量">
+        <div><strong id="newCount">0</strong><span>今日新词</span></div>
+        <div><strong id="reviewCount">0</strong><span>今日复习</span></div>
+        <div><strong id="wrongTaskCount">0</strong><span>今日错词</span></div>
+        <div><strong id="totalCount">0</strong><span>预计总题量</span></div>
+      </section>
+
+      <div class="primary-actions">
+        <button id="startButton" class="button primary" type="button">开始今日测试</button>
+        <button id="reviewWrongButton" class="button secondary" type="button">错词复习</button>
+      </div>
+
+      <section class="stats" aria-label="学习统计">
+        <h3>学习统计</h3>
+        <div class="stat-grid">
+          <div><strong id="completedDays">0</strong><span>累计完成天数</span></div>
+          <div><strong id="learnedWords">0</strong><span>累计学习词数</span></div>
+          <div><strong id="wrongCount">0</strong><span>当前错词数</span></div>
+          <div><strong id="accuracy">—</strong><span>正确率</span></div>
+        </div>
+      </section>
+
+      <div class="text-actions">
+        <button id="manageWrongButton" class="link-button" type="button">查看错词库</button>
+        <button id="resetProgressButton" class="link-button danger-text" type="button">重置学习进度</button>
+      </div>
+    </section>
+
+    <section id="testView" class="view hidden" aria-labelledby="testHeading">
+      <div class="test-topbar">
+        <button id="backHomeButton" class="link-button" type="button">← 返回首页</button>
+        <span id="questionProgress" class="progress-text"></span>
+      </div>
+      <div class="question-card">
+        <div class="question-meta">
+          <span id="questionType" class="tag">新词</span>
+          <button id="editWordButton" class="link-button" type="button">修正</button>
+        </div>
+        <h2 id="testHeading">请输入英文</h2>
+        <p id="questionMeaning" class="meaning"></p>
+        <p id="questionPos" class="part-of-speech"></p>
+        <form id="answerForm" autocomplete="off">
+          <label class="sr-only" for="answerInput">英文答案</label>
+          <input id="answerInput" type="text" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="输入英文" required>
+          <button id="submitAnswerButton" class="button primary" type="submit">提交</button>
+        </form>
+        <button id="dontKnowButton" class="button secondary skip-button" type="button">不会，跳过</button>
+        <div id="feedback" class="feedback hidden" role="status" aria-live="polite"></div>
+        <button id="nextQuestionButton" class="button secondary hidden" type="button">下一题</button>
+      </div>
+    </section>
+
+    <section id="resultView" class="view hidden" aria-labelledby="resultTitle">
+      <div class="question-card result-card">
+        <p class="eyebrow">本次完成</p>
+        <h2 id="resultTitle">完成</h2>
+        <p id="resultSummary" class="meaning"></p>
+        <button id="resultHomeButton" class="button primary" type="button">返回首页</button>
+      </div>
+    </section>
+
+    <section id="wrongView" class="view hidden" aria-labelledby="wrongTitle">
+      <div class="test-topbar">
+        <button id="wrongBackButton" class="link-button" type="button">← 返回首页</button>
+      </div>
+      <div class="list-header">
+        <div>
+          <p class="eyebrow">错词管理</p>
+          <h2 id="wrongTitle">当前错词</h2>
+        </div>
+        <span id="wrongListCount" class="tag">0 个</span>
+      </div>
+      <div id="wrongList" class="wrong-list"></div>
+      <div class="manage-actions">
+        <button id="exportWrongButton" class="button secondary" type="button">导出错词 CSV</button>
+        <button id="clearWrongButton" class="button danger" type="button">清空错词库</button>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="editDialog">
+    <form id="editForm" method="dialog">
+      <h2>修正单词</h2>
+      <p class="muted">修正仅保存在当前浏览器。</p>
+      <label for="editWordInput">英文</label>
+      <input id="editWordInput" type="text" required>
+      <label for="editMeaningInput">中文</label>
+      <textarea id="editMeaningInput" rows="4" required></textarea>
+      <div class="dialog-actions">
+        <button id="cancelEditButton" class="button secondary" type="button">取消</button>
+        <button class="button primary" type="submit">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer class="site-footer">
+    <div class="shell">所有数据保存在本机浏览器，不会上传。</div>
+  </footer>
+
+  <script src="vocab_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
